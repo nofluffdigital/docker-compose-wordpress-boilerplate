@@ -1,0 +1,44 @@
+version: "3.3"
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - ./schema/:/docker-entrypoint-initdb.d
+      #- ./datadir/:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    container_name: wp_db_debug
+    # Disable mysql strict mode
+    command: mysqld --sql_mode="" 
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - "1111:3306"
+    expose:
+      # Opens port 3306 on the container
+      - "1111"
+
+  wordpress:
+    depends_on:
+      - db
+    build: .
+    ports:
+      - "4000:80"
+    restart: always
+    volumes:
+      - ./wordpress/:/var/www/html/
+    environment:
+      #Enable PHP Debugging
+      PHP_EXTENSION_XDEBUG: 1
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_SITE_URL: 'http://localhost:4000'
+      WORDPRESS_DB_HOME_URL: 'http://localhost:4000'
+      WORDPRESS_DB_PREFIX: 'wp_'
+    container_name: wp_debug

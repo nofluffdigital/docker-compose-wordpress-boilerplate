@@ -1,0 +1,7 @@
+wordpress/*
+!wordpress/wp-config.php
+!wordpress/wp-content
+!wordpress/.gitkeep
+datadir/*
+!datadir/.gitkeep
+.DS_Store
